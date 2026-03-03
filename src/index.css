@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-anniversary-gold: #D4AF37;
+  --color-anniversary-black: #121212;
+  --color-anniversary-white: #F8F9FA;
+  --font-sans: 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-anniversary-black text-anniversary-white font-sans antialiased;
+  }
+}
