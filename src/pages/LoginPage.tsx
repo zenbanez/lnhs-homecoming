@@ -15,7 +15,7 @@ export default function LoginPage() {
         const provider = new GoogleAuthProvider();
         try {
             await signInWithPopup(auth, provider);
-            navigate('/');
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             alert('Login failed');
@@ -31,7 +31,7 @@ export default function LoginPage() {
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
             }
-            navigate('/');
+            navigate('/dashboard');
         } catch (error: any) {
             console.error(error);
             alert(error.message);

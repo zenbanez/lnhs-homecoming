@@ -22,6 +22,7 @@ export default function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) 
         { name: 'Program', path: '/program' },
         { name: 'Gala Night', path: '/gala' },
         { name: 'May Fun Run', path: '/funrun' },
+        { name: 'Memory Album', path: '/album' },
         { name: 'In Memoriam', path: '/memoriam' },
     ];
 
@@ -63,8 +64,7 @@ export default function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) 
                         {user && (
                             <Link
                                 to="/dashboard"
-                                className={`text-sm font-medium transition-colors hover:text-anniversary-gold ${isDashboardRoute ? 'text-anniversary-gold' : 'text-gray-400'
-                                    }`}
+                                className="text-sm font-bold px-4 py-1.5 rounded-full bg-gradient-to-r from-anniversary-gold to-yellow-500 text-black hover:opacity-90 transition-opacity shadow-[0_0_15px_rgba(234,179,8,0.3)]"
                             >
                                 Dashboard
                             </Link>
@@ -75,7 +75,7 @@ export default function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) 
                                     <div className="text-right">
                                         <div className="text-white font-medium">{userData?.displayName || user.email?.split('@')[0]}</div>
                                         <div className="flex gap-2 justify-end mt-0.5">
-                                            <Link to="/profile" className="text-anniversary-gold hover:text-yellow-400 flex items-center gap-1 text-[9px] uppercase font-bold px-1 border border-anniversary-gold/30 rounded">
+                                            <Link to="/profile" className="bg-gradient-to-r from-anniversary-gold to-yellow-500 text-black hover:opacity-90 flex items-center gap-1 text-[9px] uppercase font-bold px-2 py-0.5 rounded shadow-sm">
                                                 Profile
                                             </Link>
                                             <button onClick={handleLogout} className="text-red-500 hover:text-red-400 flex items-center gap-1 text-[9px] uppercase font-bold">
@@ -119,7 +119,7 @@ export default function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) 
                         <Link
                             to="/dashboard"
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="block text-lg font-medium text-anniversary-gold"
+                            className="block text-lg font-bold bg-gradient-to-r from-anniversary-gold to-yellow-500 text-black px-4 py-2 rounded-lg text-center shadow-md"
                         >
                             Dashboard
                         </Link>

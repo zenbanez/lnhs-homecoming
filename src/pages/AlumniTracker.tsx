@@ -10,6 +10,7 @@ interface Classmate {
     status: 'Confirmed' | 'No Contact' | 'Deceased';
     gender: 'Male' | 'Female';
     lastLogin?: any;
+    paymentStatus?: 'Paid' | 'Unpaid';
 }
 
 const SECTIONS = [
@@ -25,6 +26,7 @@ export default function AlumniTracker() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterSection, setFilterSection] = useState('All');
     const [filterStatus, setFilterStatus] = useState('All');
+    const [filterPayment, setFilterPayment] = useState('All');
 
     // Add new modal state
     const [isAdding, setIsAdding] = useState(false);
@@ -70,7 +72,10 @@ export default function AlumniTracker() {
         const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesSection = filterSection === 'All' || c.section === filterSection;
         const matchesStatus = filterStatus === 'All' || c.status === filterStatus;
-        return matchesSearch && matchesSection && matchesStatus;
+        const matchesPayment = filterPayment === 'All' ||
+            (filterPayment === 'Paid' && c.paymentStatus === 'Paid') ||
+            (filterPayment === 'Unpaid' && c.paymentStatus !== 'Paid');
+        return matchesSearch && matchesSection && matchesStatus && matchesPayment;
     });
 
     return (
@@ -90,8 +95,8 @@ export default function AlumniTracker() {
                 </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative flex-1 w-full">
+            <div className="bg-white/5 border border-white/10 p-4 rounded-xl grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                     <input
                         type="text"
@@ -102,32 +107,43 @@ export default function AlumniTracker() {
                     />
                 </div>
 
-                <div className="flex gap-4 w-full md:w-auto">
-                    <div className="relative flex-1 md:w-48">
-                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                        <select
-                            value={filterSection}
-                            onChange={e => setFilterSection(e.target.value)}
-                            className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
-                        >
-                            <option value="All">All Sections</option>
-                            {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
-                    </div>
+                <div className="relative w-full">
+                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                    <select
+                        value={filterSection}
+                        onChange={e => setFilterSection(e.target.value)}
+                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
+                    >
+                        <option value="All">All Sections</option>
+                        {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                </div>
 
-                    <div className="relative flex-1 md:w-48">
-                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                        <select
-                            value={filterStatus}
-                            onChange={e => setFilterStatus(e.target.value)}
-                            className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
-                        >
-                            <option value="All">All Statuses</option>
-                            <option value="Confirmed">Confirmed</option>
-                            <option value="No Contact">No Contact</option>
-                            <option value="Deceased">Deceased</option>
-                        </select>
-                    </div>
+                <div className="relative w-full">
+                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                    <select
+                        value={filterStatus}
+                        onChange={e => setFilterStatus(e.target.value)}
+                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
+                    >
+                        <option value="All">All Statuses</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="No Contact">No Contact</option>
+                        <option value="Deceased">Deceased</option>
+                    </select>
+                </div>
+
+                <div className="relative w-full">
+                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                    <select
+                        value={filterPayment}
+                        onChange={e => setFilterPayment(e.target.value)}
+                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
+                    >
+                        <option value="All">All Payments</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Unpaid">Unpaid</option>
+                    </select>
                 </div>
             </div>
 
@@ -143,6 +159,7 @@ export default function AlumniTracker() {
                                     <th className="p-4 font-semibold">Section</th>
                                     <th className="p-4 font-semibold">Gender</th>
                                     <th className="p-4 font-semibold">Status</th>
+                                    <th className="p-4 font-semibold">Payment</th>
                                     <th className="p-4 font-semibold">Last Login</th>
                                 </tr>
                             </thead>
@@ -160,6 +177,15 @@ export default function AlumniTracker() {
                                                 {person.status}
                                             </span>
                                         </td>
+                                        <td className="p-4">
+                                            {person.paymentStatus === 'Paid' ? (
+                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-green-900/40 text-green-400 border border-green-500/20">
+                                                    PAID
+                                                </span>
+                                            ) : (
+                                                <span className="text-[10px] text-gray-600">Pending</span>
+                                            )}
+                                        </td>
                                         <td className="p-4 text-gray-500 text-sm">
                                             {person.lastLogin ? new Date(person.lastLogin.seconds * 1000).toLocaleDateString() : 'N/A'}
                                         </td>
@@ -167,7 +193,7 @@ export default function AlumniTracker() {
                                 ))}
                                 {filtered.length === 0 && (
                                     <tr>
-                                        <td colSpan={5} className="p-8 text-center text-gray-500">No records matching filters.</td>
+                                        <td colSpan={6} className="p-8 text-center text-gray-500">No records matching filters.</td>
                                     </tr>
                                 )}
                             </tbody>

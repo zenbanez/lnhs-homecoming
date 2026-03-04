@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
 interface AuthContextType {
@@ -36,9 +36,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (user) {
                 // Update last login
                 try {
-                    await updateDoc(doc(db, 'users', user.uid), {
-                        lastLogin: new Date()
+                    const now = Timestamp.now();
+                    const userRef = doc(db, 'users', user.uid);
+                    await updateDoc(userRef, {
+                        lastLogin: now
                     });
+
+                    // Sync to classmates collection if record exists
+                    const classmateRef = doc(db, 'classmates', user.uid);
+                    const classmateDoc = await getDoc(classmateRef);
+                    if (classmateDoc.exists()) {
+                        await updateDoc(classmateRef, {
+                            lastLogin: now
+                        });
+                    }
                 } catch (e) {
                     console.error("Failed to update last login", e);
                 }

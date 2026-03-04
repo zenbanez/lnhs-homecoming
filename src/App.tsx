@@ -15,6 +15,9 @@ import Inventory from './pages/Inventory';
 import LoginPage from './pages/LoginPage';
 import OnboardingPage from './pages/OnboardingPage';
 import ProfilePage from './pages/ProfilePage';
+import DashboardHome from './pages/DashboardHome';
+
+import MemoryAlbum from './pages/MemoryAlbum';
 
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode, requireOnboarding?: boolean }) {
   const { user, loading, userData } = useAuth();
@@ -39,6 +42,7 @@ function App() {
             <Route path="gala" element={<Gala />} />
             <Route path="program" element={<Program />} />
             <Route path="funrun" element={<FunRun />} />
+            <Route path="album" element={<MemoryAlbum />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="onboarding" element={
               <ProtectedRoute requireOnboarding={false}>
@@ -57,7 +61,7 @@ function App() {
                 </div>
               </ProtectedRoute>
             }>
-              <Route index element={<Navigate to="/dashboard/alumni" replace />} />
+              <Route index element={<DashboardHome />} />
               <Route path="alumni" element={<AlumniTracker />} />
               <Route path="secretariat" element={<Secretariat />} />
               <Route path="finance" element={<Finance />} />
