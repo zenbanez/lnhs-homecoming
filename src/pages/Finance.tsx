@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, query, getDocs, doc, updateDoc, Timestamp, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
-import { DollarSign, CheckCircle2, TrendingUp, AlertCircle, Clock, XCircle, CheckCircle } from 'lucide-react';
+import { DollarSign, CheckCircle2, TrendingUp, AlertCircle, XCircle, CheckCircle } from 'lucide-react';
 
 interface Payment {
     id: string;
@@ -56,7 +56,7 @@ export default function Finance() {
                 await updateDoc(classmateRef, {
                     paymentStatus: 'Paid',
                     confirmedAt: Timestamp.now()
-                }).catch(err => console.log("Classmate record not found, user might not have completed onboarding."));
+                }).catch(() => console.log("Classmate record not found, user might not have completed onboarding."));
             }
 
             fetchPayments();
@@ -155,8 +155,8 @@ export default function Finance() {
                                             </td>
                                             <td className="p-4">
                                                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold ${payment.status === 'Approved' ? 'bg-green-900/30 text-green-400' :
-                                                        payment.status === 'Flagged' ? 'bg-red-900/30 text-red-400' :
-                                                            'bg-yellow-900/30 text-yellow-400'
+                                                    payment.status === 'Flagged' ? 'bg-red-900/30 text-red-400' :
+                                                        'bg-yellow-900/30 text-yellow-400'
                                                     }`}>
                                                     {payment.status.toUpperCase()}
                                                 </span>
