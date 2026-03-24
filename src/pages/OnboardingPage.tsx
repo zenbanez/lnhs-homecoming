@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -11,9 +11,15 @@ const SECTIONS = [
 ];
 
 export default function OnboardingPage() {
-    const { user, refreshUserData } = useAuth();
+    const { user, userData, refreshUserData } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (userData?.onboarded) {
+            navigate('/dashboard');
+        }
+    }, [userData, navigate]);
     const [formData, setFormData] = useState({
         section: 'Aquarius',
         gender: 'Female',
