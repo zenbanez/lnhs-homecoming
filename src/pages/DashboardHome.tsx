@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { Users, DollarSign, Calendar, Music, ArrowRight, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Card from '../components/ui/Card';
 
 export default function DashboardHome() {
     const { userData } = useAuth();
@@ -62,17 +63,20 @@ export default function DashboardHome() {
     };
 
     const QuickAction = ({ icon: Icon, title, desc, path, color }: any) => (
-        <button
+        <Card
             onClick={() => navigate(path)}
-            className="group p-6 bg-white/5 border border-white/10 rounded-2xl hover:border-anniversary-gold/30 hover:bg-white/10 transition-all text-left relative overflow-hidden"
+            hoverable
+            className="group cursor-pointer flex flex-col h-full"
         >
             <div className={`p-3 rounded-lg ${color} w-fit mb-4`}>
                 <Icon size={24} />
             </div>
             <h3 className="text-lg font-bold text-white mb-1">{title}</h3>
-            <p className="text-sm text-gray-400">{desc}</p>
-            <ArrowRight className="absolute right-6 bottom-6 text-gray-600 group-hover:text-anniversary-gold transition-colors" size={20} />
-        </button>
+            <p className="text-sm text-gray-400 mb-6">{desc}</p>
+            <div className="mt-auto flex justify-end">
+                <ArrowRight className="text-gray-600 group-hover:text-anniversary-gold transition-colors" size={20} />
+            </div>
+        </Card>
     );
 
     return (
@@ -104,25 +108,25 @@ export default function DashboardHome() {
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="bg-black border border-white/10 p-6 rounded-2xl">
+                        <Card variant="flat" className="p-6">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-blue-900/30 text-blue-400 rounded-lg"><Calendar size={20} /></div>
                                 <span className="text-xs font-bold text-blue-400 bg-blue-900/20 px-2 py-1 rounded">GOAL: JULY 2</span>
                             </div>
                             <div className="text-3xl font-bold text-white">{calculateCountdown()}</div>
                             <div className="text-sm text-gray-500 font-medium uppercase tracking-wider mt-1">Days to Homecoming</div>
-                        </div>
+                        </Card>
 
-                        <div className="bg-black border border-white/10 p-6 rounded-2xl">
+                        <Card variant="flat" className="p-6">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-green-900/30 text-green-400 rounded-lg"><Users size={20} /></div>
                                 <span className="text-xs font-bold text-green-400 bg-green-900/20 px-2 py-1 rounded">Confirmed: {stats.confirmed}</span>
                             </div>
                             <div className="text-3xl font-bold text-white">{stats.totalAlumni}</div>
                             <div className="text-sm text-gray-500 font-medium uppercase tracking-wider mt-1">Batchmates Tracked</div>
-                        </div>
+                        </Card>
 
-                        <div className="bg-black border border-white/10 p-6 rounded-2xl">
+                        <Card variant="flat" className="p-6">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-anniversary-gold/20 text-anniversary-gold rounded-lg"><DollarSign size={20} /></div>
                                 {stats.pendingPayments > 0 && (
@@ -133,16 +137,16 @@ export default function DashboardHome() {
                             </div>
                             <div className="text-3xl font-bold text-white">₱{stats.totalCollected.toLocaleString()}</div>
                             <div className="text-sm text-gray-500 font-medium uppercase tracking-wider mt-1">Total Funds Verified</div>
-                        </div>
+                        </Card>
 
-                        <div className="bg-black border border-white/10 p-6 rounded-2xl">
+                        <Card variant="flat" className="p-6">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-purple-900/30 text-purple-400 rounded-lg"><Music size={20} /></div>
                                 <span className="text-xs font-bold text-purple-400 bg-purple-900/20 px-2 py-1 rounded">Live Count</span>
                             </div>
                             <div className="text-3xl font-bold text-white">{stats.galaAttendees}</div>
                             <div className="text-sm text-gray-500 font-medium uppercase tracking-wider mt-1">Gala Attendees</div>
-                        </div>
+                        </Card>
                     </div>
 
                     {/* Hub Highlights / Actions */}

@@ -18,6 +18,7 @@ import ProfilePage from './pages/ProfilePage';
 import DashboardHome from './pages/DashboardHome';
 
 import MemoryAlbum from './pages/MemoryAlbum';
+import AdminPanel from './pages/AdminPanel';
 
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode, requireOnboarding?: boolean }) {
   const { user, loading, userData } = useAuth();
@@ -29,6 +30,12 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
     return <Navigate to="/onboarding" replace />;
   }
   return <>{children}</>;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { userData, loading } = useAuth();
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-anniversary-gold">Loading...</div>;
+  return userData?.role === 'admin' ? <>{children}</> : <Navigate to="/dashboard" replace />;
 }
 
 function App() {
@@ -63,6 +70,11 @@ function App() {
             }>
               <Route index element={<DashboardHome />} />
               <Route path="alumni" element={<AlumniTracker />} />
+              <Route path="admin" element={
+                <AdminRoute>
+                  <AdminPanel />
+                </AdminRoute>
+              } />
               <Route path="secretariat" element={<Secretariat />} />
               <Route path="finance" element={<Finance />} />
               <Route path="venue" element={<Venue />} />

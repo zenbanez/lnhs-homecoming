@@ -1,20 +1,11 @@
 import { useState, useEffect } from 'react';
 import { collection, query, getDocs, doc, updateDoc, Timestamp, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
-import { DollarSign, CheckCircle2, TrendingUp, AlertCircle, XCircle, CheckCircle } from 'lucide-react';
+import { DollarSign, CheckCircle2, TrendingUp, AlertCircle, XCircle, CheckCircle, RefreshCcw } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
 
-interface Payment {
-    id: string;
-    userId: string;
-    userName: string;
-    userSection: string;
-    type: string;
-    amount: number;
-    method: string;
-    refNumber: string;
-    status: 'Pending' | 'Approved' | 'Flagged';
-    createdAt: any;
-}
+import type { Payment } from '../types';
 
 export default function Finance() {
     const [payments, setPayments] = useState<Payment[]>([]);
@@ -87,35 +78,42 @@ export default function Finance() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-green-900/40 to-green-900/10 border border-green-500/30 p-6 rounded-2xl flex flex-col justify-between">
+                <Card className="from-green-900/40 to-green-900/10 border-green-500/30 flex flex-col justify-between h-40" variant="glass">
                     <div>
                         <div className="text-green-400 mb-2"><TrendingUp size={24} /></div>
                         <h3 className="text-gray-300 font-medium">Registration Fees</h3>
                     </div>
                     <div className="text-4xl font-bold text-white mt-4">₱{stats.fees.toLocaleString()}</div>
-                </div>
+                </Card>
 
-                <div className="bg-gradient-to-br from-anniversary-gold/20 to-yellow-900/10 border border-anniversary-gold/30 p-6 rounded-2xl flex flex-col justify-between">
+                <Card className="from-anniversary-gold/20 to-yellow-900/10 border-anniversary-gold/30 flex flex-col justify-between h-40" variant="glass">
                     <div>
                         <div className="text-anniversary-gold mb-2"><CheckCircle2 size={24} /></div>
                         <h3 className="text-gray-300 font-medium">Section Contributions</h3>
                     </div>
                     <div className="text-4xl font-bold text-white mt-4">₱{stats.contributions.toLocaleString()}</div>
-                </div>
+                </Card>
 
-                <div className="bg-gradient-to-br from-blue-900/40 to-blue-900/10 border border-blue-500/30 p-6 rounded-2xl flex flex-col justify-between">
+                <Card className="from-blue-900/40 to-blue-900/10 border-blue-500/30 flex flex-col justify-between h-40" variant="glass">
                     <div>
                         <div className="text-blue-400 mb-2"><AlertCircle size={24} /></div>
                         <h3 className="text-gray-300 font-medium">Total Special Donations</h3>
                     </div>
                     <div className="text-4xl font-bold text-white mt-4">₱{stats.donations.toLocaleString()}</div>
-                </div>
+                </Card>
             </div>
 
-            <div className="bg-black border border-white/10 rounded-xl overflow-hidden mt-8">
+            <Card className="p-0 overflow-hidden" variant="flat">
                 <div className="p-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
                     <h2 className="font-bold text-lg">Recent Payment Submissions</h2>
-                    <button onClick={fetchPayments} className="text-sm bg-white/10 px-3 py-1 rounded hover:bg-white/20 transition-colors">Refresh</button>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={fetchPayments}
+                        leftIcon={<RefreshCcw size={14} className={loading ? 'animate-spin' : ''} />}
+                    >
+                        Refresh
+                    </Button>
                 </div>
 
                 {loading ? (
@@ -164,20 +162,24 @@ export default function Finance() {
                                             <td className="p-4 text-right">
                                                 {payment.status === 'Pending' && (
                                                     <div className="flex justify-end gap-2">
-                                                        <button
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
                                                             onClick={() => handleUpdateStatus(payment, 'Approved')}
-                                                            className="p-2 hover:bg-green-500/20 text-green-500 rounded-lg transition-colors"
+                                                            className="text-green-500 hover:text-white hover:bg-green-500/50"
                                                             title="Approve"
                                                         >
                                                             <CheckCircle size={18} />
-                                                        </button>
-                                                        <button
+                                                        </Button>
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
                                                             onClick={() => handleUpdateStatus(payment, 'Flagged')}
-                                                            className="p-2 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors"
+                                                            className="text-red-500 hover:text-white hover:bg-red-500/50"
                                                             title="Flag / Reject"
                                                         >
                                                             <XCircle size={18} />
-                                                        </button>
+                                                        </Button>
                                                     </div>
                                                 )}
                                                 {payment.status !== 'Pending' && (
@@ -191,7 +193,7 @@ export default function Finance() {
                         </table>
                     </div>
                 )}
-            </div>
+            </Card>
         </div>
     );
 }

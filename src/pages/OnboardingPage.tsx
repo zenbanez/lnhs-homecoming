@@ -4,6 +4,9 @@ import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { UserPlus, CheckCircle } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import Input from '../components/ui/Input';
 
 const SECTIONS = [
     'Aquarius', 'Pisces', 'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo',
@@ -57,7 +60,7 @@ export default function OnboardingPage() {
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white/5 p-8 rounded-2xl border border-anniversary-gold/20 backdrop-blur-sm">
+            <Card className="max-w-md w-full p-8" variant="glass">
                 <div className="text-center">
                     <div className="mx-auto h-12 w-12 bg-anniversary-gold rounded-full flex items-center justify-center text-black mb-4">
                         <UserPlus size={24} />
@@ -94,57 +97,49 @@ export default function OnboardingPage() {
                                 </select>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Contact Number (Optional)</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. +63 917 123 4567"
-                                    value={formData.contactNumber}
-                                    onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
-                                    className="w-full bg-black border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-anniversary-gold"
-                                />
-                            </div>
-
+                            <Input
+                                label="Contact Number (Optional)"
+                                type="text"
+                                placeholder="e.g. +63 917 123 4567"
+                                value={formData.contactNumber}
+                                onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
+                            />
                         </div>
 
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-300 mb-1">Your Participation</label>
                             <div className="grid grid-cols-2 gap-4">
-                                <button
+                                <Button
                                     type="button"
+                                    variant={formData.status === 'Attend' ? 'primary' : 'ghost'}
                                     onClick={() => setFormData({ ...formData, status: 'Attend' })}
-                                    className={`py-3 px-4 rounded-lg border flex flex-col items-center justify-center transition-all ${formData.status === 'Attend'
-                                        ? 'border-anniversary-gold bg-anniversary-gold/20 text-white'
-                                        : 'border-gray-700 bg-black text-gray-500 hover:border-gray-600'
-                                        }`}
+                                    className="flex-col h-auto py-4"
                                 >
                                     <CheckCircle size={20} className={`mb-1 ${formData.status === 'Attend' ? 'opacity-100' : 'opacity-20'}`} />
                                     <span className="font-bold">I will Attend</span>
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     type="button"
+                                    variant={formData.status === 'Support' ? 'primary' : 'ghost'}
                                     onClick={() => setFormData({ ...formData, status: 'Support' })}
-                                    className={`py-3 px-4 rounded-lg border flex flex-col items-center justify-center transition-all ${formData.status === 'Support'
-                                        ? 'border-anniversary-gold bg-anniversary-gold/20 text-white'
-                                        : 'border-gray-700 bg-black text-gray-500 hover:border-gray-600'
-                                        }`}
+                                    className="flex-col h-auto py-4"
                                 >
                                     <CheckCircle size={20} className={`mb-1 ${formData.status === 'Support' ? 'opacity-100' : 'opacity-20'}`} />
                                     <span className="font-bold">I will Support</span>
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>
 
-                    <button
+                    <Button
                         type="submit"
-                        disabled={loading}
-                        className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-black bg-anniversary-gold hover:bg-yellow-500 focus:outline-none transition-colors disabled:opacity-50"
+                        className="w-full mt-8"
+                        isLoading={loading}
                     >
                         {loading ? 'Saving Profile...' : 'Finalize Profile'}
-                    </button>
+                    </Button>
                 </form>
-            </div>
+            </Card>
         </div>
     );
 }

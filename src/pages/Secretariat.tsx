@@ -4,18 +4,11 @@ import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebas
 import { db, storage } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { FileText, Save, Upload, Loader2, Download, Trash2, File as FileIcon, Image as ImageIcon } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import Input from '../components/ui/Input';
 
-interface DocumentRecord {
-    id: string;
-    title: string;
-    category: string;
-    url: string;
-    storagePath: string;
-    uploaderName: string;
-    uploaderId: string;
-    fileType: string;
-    createdAt: any;
-}
+import type { DocumentRecord } from '../types';
 
 const CATEGORIES = [
     'Meeting Minutes',
@@ -163,24 +156,21 @@ export default function Secretariat() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Upload Section */}
                 <div className="lg:col-span-1">
-                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 p-6 rounded-2xl sticky top-24">
+                    <Card className="sticky top-24" variant="glass">
                         <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                             <Upload className="text-anniversary-gold" size={20} /> Upload Document
                         </h2>
 
                         <form onSubmit={handleUpload} className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-1">Document Title</label>
-                                <input
-                                    required
-                                    type="text"
-                                    value={title}
-                                    onChange={e => setTitle(e.target.value)}
-                                    className="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-anniversary-gold transition-colors placeholder:text-gray-600"
-                                    placeholder="e.g. March Board Meeting Minutes"
-                                    disabled={isUploading}
-                                />
-                            </div>
+                            <Input
+                                label="Document Title"
+                                required
+                                value={title}
+                                onChange={e => setTitle(e.target.value)}
+                                placeholder="e.g. March Board Meeting Minutes"
+                                disabled={isUploading}
+                                leftIcon={<FileText size={18} />}
+                            />
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Category</label>
@@ -232,51 +222,45 @@ export default function Secretariat() {
                                 )}
                             </div>
 
-                            <button
-                                disabled={!selectedFile || isUploading || !title}
+                            <Button
                                 type="submit"
-                                className={`w-full font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2
-                                    ${(!selectedFile || isUploading || !title)
-                                        ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-anniversary-gold to-yellow-500 text-black hover:opacity-90 shadow-[0_0_15px_rgba(234,179,8,0.2)]'}`}
+                                className="w-full"
+                                isLoading={isUploading}
+                                disabled={!selectedFile || !title}
+                                leftIcon={<Save size={18} />}
                             >
-                                {isUploading ? (
-                                    <>
-                                        <Loader2 size={18} className="animate-spin" />
-                                        Uploading {uploadProgress}%
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save size={18} /> Save Document
-                                    </>
-                                )}
-                            </button>
+                                {isUploading ? `Uploading ${uploadProgress}%` : 'Save Document'}
+                            </Button>
                         </form>
-                    </div>
+                    </Card>
                 </div>
 
                 {/* Document List Section */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Filters */}
                     <div className="flex flex-wrap gap-2">
-                        <button
+                        <Button
+                            size="sm"
+                            variant={!filterCategory ? 'primary' : 'ghost'}
                             onClick={() => setFilterCategory(null)}
-                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${!filterCategory ? 'bg-anniversary-gold border-anniversary-gold text-black' : 'bg-transparent border-gray-600 text-gray-400 hover:border-gray-400 hover:text-white'}`}
+                            className={!filterCategory ? '' : 'text-gray-400'}
                         >
                             All Documents
-                        </button>
+                        </Button>
                         {CATEGORIES.map(cat => (
-                            <button
+                            <Button
                                 key={cat}
+                                size="sm"
+                                variant={filterCategory === cat ? 'primary' : 'ghost'}
                                 onClick={() => setFilterCategory(cat)}
-                                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${filterCategory === cat ? 'bg-anniversary-gold border-anniversary-gold text-black' : 'bg-transparent border-gray-600 text-gray-400 hover:border-gray-400 hover:text-white'}`}
+                                className={filterCategory === cat ? '' : 'text-gray-400'}
                             >
                                 {cat}
-                            </button>
+                            </Button>
                         ))}
                     </div>
 
-                    <div className="bg-black border border-white/10 rounded-2xl overflow-hidden">
+                    <Card className="p-0 overflow-hidden" variant="flat">
                         {loading ? (
                             <div className="flex justify-center items-center py-20 text-gray-500">
                                 <Loader2 className="animate-spin text-anniversary-gold mb-2" size={32} />
@@ -311,23 +295,25 @@ export default function Secretariat() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-0 border-white/5">
-                                                <a
-                                                    href={docRecord.url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors text-sm font-medium"
+                                                <Button
+                                                    size="sm"
+                                                    variant="secondary"
+                                                    onClick={() => window.open(docRecord.url, '_blank')}
+                                                    leftIcon={<Download size={16} />}
+                                                    className="flex-1 sm:flex-none"
                                                 >
-                                                    <Download size={16} /> View / Download
-                                                </a>
-                                                {/* Allow deletion if user is uploader OR if they are part of the secretariat (mocked via generic auth for now) */}
+                                                    View / Download
+                                                </Button>
                                                 {user?.uid === docRecord.uploaderId && (
-                                                    <button
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
                                                         onClick={() => handleDelete(docRecord)}
-                                                        className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors border border-red-500/20 hover:border-red-500"
+                                                        className="text-red-500 hover:bg-red-500/20"
                                                         title="Delete Document"
                                                     >
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                        <Trash2 size={18} />
+                                                    </Button>
                                                 )}
                                             </div>
                                         </div>
@@ -339,7 +325,7 @@ export default function Secretariat() {
                                 )}
                             </div>
                         )}
-                    </div>
+                    </Card>
                 </div>
             </div>
         </div>

@@ -3,18 +3,12 @@ import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, d
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { useAuth } from '../context/AuthContext';
-import { Camera, Image as ImageIcon, Upload, X, Loader2, Trash2 } from 'lucide-react';
+import { Camera, Image as ImageIcon, Upload, X, Loader2, Trash2, User as UserIcon } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import Input from '../components/ui/Input';
 
-interface Photo {
-    id: string;
-    url: string;
-    caption: string;
-    uploaderName: string;
-    uploaderId: string;
-    category: string;
-    storagePath?: string;
-    createdAt: any;
-}
+import type { Photo } from '../types';
 
 const CATEGORIES = ['Memories', 'Places', 'People', 'Other'];
 
@@ -153,19 +147,17 @@ export default function MemoryAlbum() {
 
             {/* Upload Section (Authenticated Users Only) */}
             {user && (
-                <div className="bg-white/5 border border-anniversary-gold/20 rounded-2xl p-6 md:p-8 max-w-2xl mx-auto backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4">
+                <Card className="max-w-2xl mx-auto backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4" variant="glass" hoverable={false}>
                     <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                         <Upload size={20} className="text-anniversary-gold" /> Add to Album
                     </h3>
                     <div className="space-y-4">
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <input
-                                type="text"
+                            <Input
                                 placeholder="Add a short description..."
                                 value={caption}
                                 onChange={(e) => setCaption(e.target.value)}
                                 disabled={isUploading}
-                                className="flex-1 bg-black border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-anniversary-gold transition-colors"
                             />
                             <select
                                 value={category}
@@ -201,25 +193,15 @@ export default function MemoryAlbum() {
                                     {selectedFile ? selectedFile.name : 'Select Image'}
                                 </label>
                             </div>
-                            <button
+                             <Button
                                 onClick={handleUpload}
-                                disabled={!selectedFile || isUploading}
-                                className={`w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-8 rounded-lg font-bold transition-colors shadow-none
-                                    ${!selectedFile || isUploading
-                                        ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                                        : 'bg-anniversary-gold hover:bg-yellow-500 text-black shadow-lg shadow-yellow-900/20'}`}
+                                isLoading={isUploading}
+                                disabled={!selectedFile}
+                                className="w-full sm:w-auto"
+                                leftIcon={<Upload size={20} />}
                             >
-                                {isUploading ? (
-                                    <>
-                                        <Loader2 size={20} className="animate-spin" />
-                                        {uploadProgress}%
-                                    </>
-                                ) : (
-                                    <>
-                                        <Upload size={20} /> Upload
-                                    </>
-                                )}
-                            </button>
+                                {isUploading ? `${uploadProgress}%` : 'Upload'}
+                            </Button>
                         </div>
                         {selectedFile && (
                             <div className="flex justify-between items-center text-xs text-gray-400 mt-1">
@@ -238,7 +220,7 @@ export default function MemoryAlbum() {
                             <div className="bg-anniversary-gold h-1.5 transition-all duration-300 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
                         </div>
                     )}
-                </div>
+                </Card>
             )}
 
             {!user && (
@@ -249,20 +231,24 @@ export default function MemoryAlbum() {
 
             {/* Filters */}
             <div className="flex flex-wrap justify-center gap-2 mb-8">
-                <button
+                <Button
+                    size="sm"
+                    variant={!filterCategory ? 'primary' : 'ghost'}
                     onClick={() => setFilterCategory(null)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!filterCategory ? 'bg-anniversary-gold text-black' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                    className={!filterCategory ? '' : 'text-gray-400'}
                 >
                     All Photos
-                </button>
+                </Button>
                 {CATEGORIES.map(cat => (
-                    <button
+                    <Button
                         key={cat}
+                        size="sm"
+                        variant={filterCategory === cat ? 'primary' : 'ghost'}
                         onClick={() => setFilterCategory(cat)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${filterCategory === cat ? 'bg-anniversary-gold text-black' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'}`}
+                        className={filterCategory === cat ? '' : 'text-gray-400'}
                     >
                         {cat}
-                    </button>
+                    </Button>
                 ))}
             </div>
 
@@ -282,10 +268,12 @@ export default function MemoryAlbum() {
                     {photos
                         .filter(photo => !filterCategory || photo.category === filterCategory)
                         .map((photo) => (
-                            <div
+                            <Card
                                 key={photo.id}
                                 onClick={() => setSelectedPhoto(photo)}
-                                className="break-inside-avoid relative group cursor-pointer rounded-2xl overflow-hidden bg-black border border-white/10 transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-anniversary-gold/10"
+                                variant="outline"
+                                hoverable
+                                className="break-inside-avoid p-0 relative group cursor-pointer border-white/10 overflow-hidden"
                             >
                                 <img
                                     src={photo.url}
@@ -303,7 +291,7 @@ export default function MemoryAlbum() {
                                         <UserIcon size={14} /> {photo.uploaderName}
                                     </p>
                                 </div>
-                            </div>
+                            </Card>
                         ))}
                 </div>
             )}
@@ -367,6 +355,3 @@ export default function MemoryAlbum() {
         </div>
     );
 }
-
-// Ensure UserIcon is imported for the hover state
-import { User as UserIcon } from 'lucide-react';

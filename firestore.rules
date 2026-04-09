@@ -1,0 +1,90 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isCommittee() {
+      return isAuthenticated() && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'committee'
+      );
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isCommittee();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Classmates directory
+    match /classmates/{classmateId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated(); // Allow users to create their own record or committee to add others
+      allow update: if isOwner(classmateId) || isCommittee();
+      allow delete: if isAdmin();
+    }
+
+    // Payments
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isCommittee());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isCommittee();
+    }
+
+    // Registrations (Gala & Fun Run)
+    match /gala_registrations/{regId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isCommittee());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isCommittee();
+    }
+    
+    match /funrun_registrations/{regId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isCommittee());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isCommittee();
+    }
+
+    // Memory Album
+    match /photos/{photoId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isCommittee());
+      allow update: if isCommittee();
+    }
+
+    // Inventory
+    match /inventory/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isCommittee();
+    }
+
+    // Secretariat Documents
+    match /documents/{docId} {
+      allow read: if isCommittee();
+      allow write: if isCommittee();
+    }
+
+    // T-Shirt Orders
+    match /tshirt_orders/{orderId} {
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isCommittee());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isCommittee();
+    }
+  }
+}

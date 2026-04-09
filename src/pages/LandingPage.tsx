@@ -1,3 +1,5 @@
+import Card from '../components/ui/Card';
+
 export default function LandingPage() {
     return (
         <div className="space-y-16 py-8">
@@ -36,7 +38,7 @@ export default function LandingPage() {
                         { title: "Deeper Connection", img: "/assets/purpose-5.png", text: "A chance to connect and get to know each other even better after all these years." },
                         { title: "Future Avenues", img: "/assets/purpose-6.png", text: "Setting the stage for future endeavors to help and learn from each other." }
                     ].map((item, i) => (
-                        <div key={i} className="group bg-white/5 border border-anniversary-gold/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-anniversary-gold/30 transition-all duration-500 hover:-translate-y-2">
+                        <Card key={i} className="p-0 overflow-hidden group" hoverable variant="glass">
                             <div className="h-48 overflow-hidden relative">
                                 <img
                                     src={item.img}
@@ -58,7 +60,7 @@ export default function LandingPage() {
                                     {item.text}
                                 </p>
                             </div>
-                        </div>
+                        </Card>
                     ))}
                 </div>
             </section>

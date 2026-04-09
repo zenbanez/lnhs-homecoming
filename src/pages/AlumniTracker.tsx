@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Search, Filter, Plus, Users } from 'lucide-react';
+import { Search, Filter, Plus, Users, Upload } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import Input from '../components/ui/Input';
+import CSVImporter from '../components/CSVImporter';
+import { useAuth } from '../context/AuthContext';
 
-interface Classmate {
-    id: string;
-    name: string;
-    section: string;
-    status: 'Confirmed' | 'No Contact' | 'Deceased';
-    gender: 'Male' | 'Female';
-    lastLogin?: any;
-    paymentStatus?: 'Paid' | 'Unpaid';
-}
+import type { Classmate } from '../types';
 
 const SECTIONS = [
     'Aquarius', 'Pisces', 'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo',
@@ -30,7 +27,11 @@ export default function AlumniTracker() {
 
     // Add new modal state
     const [isAdding, setIsAdding] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
     const [newPerson, setNewPerson] = useState({ name: '', section: 'Aquarius', status: 'Confirmed', gender: 'Female' });
+
+    const { userData } = useAuth();
+    const isAdmin = userData?.role === 'admin' || userData?.role === 'committee';
 
     useEffect(() => {
         fetchClassmates();
@@ -66,6 +67,24 @@ export default function AlumniTracker() {
         }
     };
 
+    const handleBatchImport = async (data: any[]) => {
+        // Map CSV data to Classmate schema
+        const classmatesToAdd = data.map(item => ({
+            name: item.name || 'Unknown',
+            section: item.section || 'Aquarius',
+            gender: item.gender || 'Female',
+            status: item.status || 'No Contact',
+            contactNumber: item.contactnumber || item['contact number'] || '',
+            paymentStatus: 'Unpaid',
+            createdAt: new Date()
+        }));
+
+        // In a real app we'd use writeBatch, but for simplicity and smaller sets:
+        const promises = classmatesToAdd.map(person => addDoc(collection(db, 'classmates'), person));
+        await Promise.all(promises);
+        fetchClassmates();
+    };
+
 
 
     const filtered = classmates.filter(c => {
@@ -88,31 +107,46 @@ export default function AlumniTracker() {
                     <p className="text-gray-400 mt-1">Total Records: {classmates.length} | Confirmed: {classmates.filter(c => c.status === 'Confirmed').length}</p>
                 </div>
                 <div className="flex gap-2">
-
-                    <button onClick={() => setIsAdding(true)} className="px-4 py-2 bg-anniversary-gold text-black rounded-lg hover:bg-yellow-500 transition-colors font-semibold flex items-center gap-2">
-                        <Plus size={18} /> Add Record
-                    </button>
+                    {isAdmin && (
+                        <>
+                            <Button 
+                                variant="secondary" 
+                                onClick={() => setIsImporting(!isImporting)} 
+                                leftIcon={<Upload className={isImporting ? 'rotate-180 transition-all' : 'transition-all'} size={18} />}
+                            >
+                                {isImporting ? 'Cancel Import' : 'Batch Import'}
+                            </Button>
+                            <Button onClick={() => setIsAdding(true)} leftIcon={<Plus size={18} />}>
+                                Add Record
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 p-4 rounded-xl grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-                <div className="relative w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Search by name..."
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors"
+            {isImporting && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                    <CSVImporter 
+                        expectedHeaders={['Name', 'Section', 'Gender', 'Status', 'Contact Number']}
+                        onImport={handleBatchImport}
                     />
                 </div>
+            )}
+
+            <Card className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center p-4">
+                <Input
+                    placeholder="Search by name..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    leftIcon={<Search size={18} />}
+                />
 
                 <div className="relative w-full">
                     <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                     <select
                         value={filterSection}
                         onChange={e => setFilterSection(e.target.value)}
-                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
+                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
                     >
                         <option value="All">All Sections</option>
                         {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
@@ -124,7 +158,7 @@ export default function AlumniTracker() {
                     <select
                         value={filterStatus}
                         onChange={e => setFilterStatus(e.target.value)}
-                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
+                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
                     >
                         <option value="All">All Statuses</option>
                         <option value="Confirmed">Confirmed</option>
@@ -138,14 +172,14 @@ export default function AlumniTracker() {
                     <select
                         value={filterPayment}
                         onChange={e => setFilterPayment(e.target.value)}
-                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
+                        className="w-full bg-black border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-anniversary-gold transition-colors appearance-none"
                     >
                         <option value="All">All Payments</option>
                         <option value="Paid">Paid</option>
                         <option value="Unpaid">Unpaid</option>
                     </select>
                 </div>
-            </div>
+            </Card>
 
             <div className="bg-black border border-white/10 rounded-xl overflow-hidden">
                 {loading ? (
@@ -202,45 +236,67 @@ export default function AlumniTracker() {
                 )}
             </div>
 
-            {/* Add Modal AddPerson Stub */}
+            {/* Add Modal */}
             {isAdding && (
-                <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-                    <div className="bg-[#1a1a1a] p-6 rounded-2xl w-full max-w-md border border-white/10">
-                        <h2 className="text-xl font-bold mb-4">Add Classmate Record</h2>
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+                    <Card className="w-full max-w-md p-6" variant="glass">
+                        <h2 className="text-2xl font-bold mb-6 text-white">Add Classmate Record</h2>
                         <form onSubmit={handleAddPerson} className="space-y-4">
-                            <div>
-                                <label className="block text-sm text-gray-400 mb-1">Name</label>
-                                <input required type="text" value={newPerson.name} onChange={e => setNewPerson({ ...newPerson, name: e.target.value })} className="w-full bg-black border border-gray-700 rounded-lg p-2 text-white" />
-                            </div>
+                            <Input
+                                label="Full Name"
+                                required
+                                value={newPerson.name}
+                                onChange={e => setNewPerson({ ...newPerson, name: e.target.value })}
+                                placeholder="Enter classmate name"
+                            />
+                            
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-1">Section</label>
-                                    <select value={newPerson.section} onChange={e => setNewPerson({ ...newPerson, section: e.target.value })} className="w-full bg-black border border-gray-700 rounded-lg p-2 text-white">
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Section</label>
+                                    <select
+                                        value={newPerson.section}
+                                        onChange={e => setNewPerson({ ...newPerson, section: e.target.value })}
+                                        className="w-full bg-black border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors"
+                                    >
                                         {SECTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-1">Gender</label>
-                                    <select value={newPerson.gender} onChange={e => setNewPerson({ ...newPerson, gender: e.target.value as any })} className="w-full bg-black border border-gray-700 rounded-lg p-2 text-white">
+                                    <label className="block text-sm font-medium text-gray-400 mb-1">Gender</label>
+                                    <select
+                                        value={newPerson.gender}
+                                        onChange={e => setNewPerson({ ...newPerson, gender: e.target.value as any })}
+                                        className="w-full bg-black border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors"
+                                    >
                                         <option value="Female">Female</option>
                                         <option value="Male">Male</option>
                                     </select>
                                 </div>
                             </div>
+                            
                             <div>
-                                <label className="block text-sm text-gray-400 mb-1">Status</label>
-                                <select value={newPerson.status} onChange={e => setNewPerson({ ...newPerson, status: e.target.value as any })} className="w-full bg-black border border-gray-700 rounded-lg p-2 text-white">
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Status</label>
+                                <select
+                                    value={newPerson.status}
+                                    onChange={e => setNewPerson({ ...newPerson, status: e.target.value as any })}
+                                    className="w-full bg-black border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-anniversary-gold transition-colors"
+                                >
                                     <option value="Confirmed">Confirmed</option>
                                     <option value="No Contact">No Contact</option>
                                     <option value="Deceased">Deceased</option>
                                 </select>
                             </div>
-                            <div className="flex justify-end gap-2 mt-6">
-                                <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 hover:bg-white/10 rounded-lg transition-colors">Cancel</button>
-                                <button type="submit" className="px-4 py-2 bg-anniversary-gold text-black font-semibold rounded-lg hover:bg-yellow-500 transition-colors">Save</button>
+
+                            <div className="flex justify-end gap-3 mt-8">
+                                <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>
+                                    Cancel
+                                </Button>
+                                <Button type="submit">
+                                    Save Record
+                                </Button>
                             </div>
                         </form>
-                    </div>
+                    </Card>
                 </div>
             )}
         </div>

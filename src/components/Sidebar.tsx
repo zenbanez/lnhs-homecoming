@@ -1,18 +1,30 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Users, ClipboardList, Banknote, UtensilsCrossed, Shirt, Package } from 'lucide-react';
+import { Users, ClipboardList, Banknote, UtensilsCrossed, Shirt, Package, Shield, LayoutDashboard } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
-    { name: 'Alumni Tracker', path: '/dashboard/alumni', icon: Users },
-    { name: 'Secretariat View', path: '/dashboard/secretariat', icon: ClipboardList },
-    { name: 'Finance (Ways & Means)', path: '/dashboard/finance', icon: Banknote },
-    { name: 'Venue & Food', path: '/dashboard/venue', icon: UtensilsCrossed },
-    { name: 'T-Shirt Orders', path: '/dashboard/tshirts', icon: Shirt },
-    { name: 'Resource Inventory', path: '/dashboard/inventory', icon: Package },
+    { name: 'Alumni Tracker', path: '/dashboard/alumni', icon: Users, exact: false },
+    { name: 'Secretariat View', path: '/dashboard/secretariat', icon: ClipboardList, exact: false },
+    { name: 'Finance (Ways & Means)', path: '/dashboard/finance', icon: Banknote, exact: false },
+    { name: 'Venue & Food', path: '/dashboard/venue', icon: UtensilsCrossed, exact: false },
+    { name: 'T-Shirt Orders', path: '/dashboard/tshirts', icon: Shirt, exact: false },
+    { name: 'Resource Inventory', path: '/dashboard/inventory', icon: Package, exact: false },
 ];
 
 export default function Sidebar({ isOpen, closeSidebar }: { isOpen: boolean, closeSidebar: () => void }) {
     const location = useLocation();
+    const { userData } = useAuth();
+    const isAdmin = userData?.role === 'admin';
+
+    const items = [
+        { name: 'Dashboard Home', path: '/dashboard', icon: LayoutDashboard, exact: true },
+        ...navItems,
+    ];
+
+    if (isAdmin) {
+        items.push({ name: 'Admin Panel', path: '/dashboard/admin', icon: Shield, exact: false });
+    }
 
     return (
         <>
@@ -25,9 +37,11 @@ export default function Sidebar({ isOpen, closeSidebar }: { isOpen: boolean, clo
             )}>
                 <nav className="p-4 space-y-1">
                     <div className="text-xs uppercase font-bold text-gray-500 mb-4 tracking-wider">Committees</div>
-                    {navItems.map((item) => {
+                    {items.map((item) => {
                         const Icon = item.icon;
-                        const isActive = location.pathname.startsWith(item.path);
+                        const isActive = item.exact 
+                            ? location.pathname === item.path 
+                            : location.pathname.startsWith(item.path);
                         return (
                             <Link
                                 key={item.path}

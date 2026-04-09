@@ -1,0 +1,40 @@
+rules_version = '2';
+
+// Crafting rules for Firebase Storage
+// See https://firebase.google.com/docs/storage/security
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isCommittee() {
+      return isAuthenticated() && (
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'committee'
+      );
+    }
+
+    // Memory Album photos
+    match /memory_album/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+      // Optionally restrict delete to owner/admin in the future if needed, 
+      // but for now, we'll follow the authenticated logic.
+    }
+
+    // Secretariat Documents
+    match /secretariat_docs/{allPaths=**} {
+      allow read: if isCommittee();
+      allow write: if isCommittee();
+    }
+  }
+}

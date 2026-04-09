@@ -4,21 +4,16 @@ import { doc, getDoc, updateDoc, collection, addDoc, query, where, onSnapshot, T
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { User, Save, ArrowLeft, CreditCard, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
+import Input from '../components/ui/Input';
+import type { Payment } from '../types';
 
 const SECTIONS = [
     'Aquarius', 'Pisces', 'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo',
     'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Venus', 'Mars'
 ];
 
-interface Payment {
-    id: string;
-    type: string;
-    amount: number;
-    method: string;
-    refNumber: string;
-    status: 'Pending' | 'Approved' | 'Flagged';
-    createdAt: any;
-}
 
 export default function ProfilePage() {
     const { user, userData, refreshUserData } = useAuth();
@@ -145,18 +140,20 @@ export default function ProfilePage() {
 
     return (
         <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-8">
-            <button
+            <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-gray-400 hover:text-anniversary-gold transition-colors mb-4 group"
+                leftIcon={<ArrowLeft size={16} />}
+                className="mb-4 text-gray-400"
             >
-                <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                 Back
-            </button>
+            </Button>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Profile Details */}
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="bg-white/5 p-8 rounded-2xl border border-anniversary-gold/20 backdrop-blur-sm">
+                    <Card className="p-8" variant="glass">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="h-16 w-16 bg-anniversary-gold rounded-full flex items-center justify-center text-black">
                                 <User size={32} />
@@ -164,9 +161,9 @@ export default function ProfilePage() {
                             <div>
                                 <h1 className="text-3xl font-bold text-white tracking-tight">{userData.displayName || user?.email?.split('@')[0]}</h1>
                                 <p className="text-gray-400">{user?.email}</p>
-                                {userData.lastLogin && (
+                                {userData.updatedAt && (
                                     <p className="text-xs text-anniversary-gold mt-1 opacity-70 italic">
-                                        Last Login: {new Date(userData.lastLogin.seconds * 1000).toLocaleString()}
+                                        Last Updated: {new Date(userData.updatedAt.seconds * 1000).toLocaleString()}
                                     </p>
                                 )}
                             </div>
@@ -199,16 +196,13 @@ export default function ProfilePage() {
                                     </select>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-1">Contact Number</label>
-                                    <input
-                                        type="text"
-                                        value={formData.contactNumber}
-                                        onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
-                                        className="w-full bg-black border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-anniversary-gold"
-                                        placeholder="Optional"
-                                    />
-                                </div>
+                                <Input
+                                    label="Contact Number"
+                                    type="text"
+                                    value={formData.contactNumber}
+                                    onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
+                                    placeholder="Optional"
+                                />
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-300 mb-1">Attendance Status</label>
@@ -224,20 +218,20 @@ export default function ProfilePage() {
                             </div>
 
                             <div className="pt-4">
-                                <button
+                                <Button
                                     type="submit"
-                                    disabled={isSaving}
-                                    className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-black bg-anniversary-gold hover:bg-yellow-500 focus:outline-none transition-colors disabled:opacity-50"
+                                    className="w-full"
+                                    isLoading={isSaving}
+                                    leftIcon={<Save size={18} />}
                                 >
-                                    <Save size={18} />
                                     {isSaving ? 'Saving Changes...' : 'Save Profile Changes'}
-                                </button>
+                                </Button>
                             </div>
                         </form>
-                    </div>
+                    </Card>
 
                     {/* Payment History */}
-                    <div className="bg-white/5 p-8 rounded-2xl border border-white/10">
+                    <Card className="p-8" variant="flat">
                         <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                             <Clock className="text-anniversary-gold" size={24} /> Payment History
                         </h2>
@@ -272,12 +266,12 @@ export default function ProfilePage() {
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </Card>
                 </div>
 
                 {/* Submit Payment Sidebar */}
                 <div className="space-y-6">
-                    <div className="bg-gradient-to-b from-anniversary-gold/20 to-transparent p-6 rounded-2xl border border-anniversary-gold/30">
+                    <Card variant="glass" className="from-anniversary-gold/20 to-transparent border-anniversary-gold/30">
                         <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                             <CreditCard className="text-anniversary-gold" size={24} /> Submit Payment
                         </h3>
@@ -322,36 +316,33 @@ export default function ProfilePage() {
                                 </select>
                             </div>
 
-                            <div>
-                                <label className="block text-xs font-medium text-gray-400 mb-1 uppercase tracking-wider">Reference Number</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="e.g. GCash Ref ID"
-                                    value={paymentForm.refNumber}
-                                    onChange={e => setPaymentForm({ ...paymentForm, refNumber: e.target.value })}
-                                    className="w-full bg-black border border-gray-800 rounded-lg p-2.5 text-white text-sm focus:border-anniversary-gold outline-none placeholder:text-gray-700"
-                                />
-                            </div>
+                            <Input
+                                label="Reference Number"
+                                type="text"
+                                required
+                                placeholder="e.g. GCash Ref ID"
+                                value={paymentForm.refNumber}
+                                onChange={e => setPaymentForm({ ...paymentForm, refNumber: e.target.value })}
+                            />
 
-                            <button
+                            <Button
                                 type="submit"
-                                disabled={isSubmittingPayment}
-                                className="w-full py-3 bg-anniversary-gold text-black font-bold rounded-lg hover:bg-yellow-500 transition-colors disabled:opacity-50 mt-4 shadow-lg shadow-anniversary-gold/10"
+                                className="w-full mt-4"
+                                isLoading={isSubmittingPayment}
                             >
                                 {isSubmittingPayment ? 'Submitting...' : 'Submit Records'}
-                            </button>
+                            </Button>
                         </form>
-                    </div>
+                    </Card>
 
-                    <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-xl">
+                    <Card className="bg-blue-900/20 border-blue-500/30 p-4" variant="flat">
                         <h4 className="text-blue-400 font-bold text-sm mb-2 flex items-center gap-2">
                             <AlertCircle size={16} /> Need help?
                         </h4>
                         <p className="text-xs text-blue-200/70 leading-relaxed">
                             If you encounter any issues with your payment submission, please contact our Ways & Means committee directly.
                         </p>
-                    </div>
+                    </Card>
                 </div>
             </div>
         </div>
