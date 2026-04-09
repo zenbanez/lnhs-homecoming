@@ -39,6 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             try {
+                if (user) {
+                    setLoading(true);
+                }
                 setUser(user);
                 if (user) {
                     // Update last login
