@@ -12,19 +12,19 @@ export default function Venue() {
             recommended: false
         },
         {
-            name: "Sofia's Way",
-            type: "Garden Events Place",
+            name: "1.5 Degrees Celsius",
+            type: "Events Place",
             costPerHead: 650,
             capacity: 250,
-            pros: ["Affordable", "Beautiful outdoor ambiance", "Relaxed atmosphere", "Low corkage"],
+            pros: ["Affordable", "Beautiful outdoor ambiance", "Parking Available", "Low corkage", "Sound System Included"],
             cons: ["Dependent on weather", "Further from city center", "Basic sound system only"],
             recommended: true
         },
         {
-            name: "LNHS Gymnasium",
-            type: "School Facility",
-            costPerHead: 400, // catering only
-            capacity: 800,
+            name: "Ritz Tower",
+            type: "Function Hall",
+            costPerHead: 620, // catering only
+            capacity: 150,
             pros: ["Nostalgic", "Zero venue rental cost", "Huge capacity"],
             cons: ["No air-conditioning", "Requires extensive styling", "Need to hire external caterer completely"],
             recommended: false
@@ -91,8 +91,8 @@ export default function Venue() {
                         </div>
 
                         <button className={`w-full mt-8 py-3 rounded-lg font-bold transition-colors ${opt.recommended
-                                ? 'bg-anniversary-gold hover:bg-yellow-500 text-black'
-                                : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
+                            ? 'bg-anniversary-gold hover:bg-yellow-500 text-black'
+                            : 'bg-white/5 hover:bg-white/10 text-white border border-white/10'
                             }`}>
                             Select Venue
                         </button>

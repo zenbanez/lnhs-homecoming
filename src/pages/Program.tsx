@@ -7,27 +7,28 @@ export default function Program() {
             title: "Homecoming & Gala",
             events: [
                 { time: "8:00 AM", event: "Thanksgiving Mass", venue: "LNHS Main Chapel", color: "border-blue-500" },
-                { time: "9:30 AM", event: "Grand Motorcade", venue: "City Center Route", color: "border-green-500" },
-                { time: "11:00 AM", event: "Brunch Fellowship", venue: "LNHS Gymnasium", color: "border-yellow-500" },
-                { time: "5:00 PM", event: "Homecoming Night Gala", venue: "TBD", color: "border-anniversary-gold" },
+                { time: "9:00 AM", event: "Registration & Fellowship Brunch", venue: "Madison Hotel", color: "border-green-500" },
+                { time: "11:00 AM", event: "Trip Down Memory Lane", venue: "LNHS Gymnasium", color: "border-yellow-500" },
+                { time: "5:00 PM", event: "Homecoming Night Gala", venue: "1.5 Degrees Celsius", color: "border-anniversary-gold" },
             ]
         },
         {
             day: "Day 2: July 3, 2026",
-            title: "Optional Tours",
+            title: "Outdoor Fun",
             events: [
-                { time: "7:00 AM", event: "Assembly for Tours", venue: "Hotel Lobby", color: "border-purple-500" },
-                { time: "8:00 AM", event: "Heritage City Tour", venue: "Various Landmarks", color: "border-pink-500" },
-                { time: "12:00 NN", event: "Lunch by the Sea", venue: "Coastal Restobar", color: "border-orange-500" },
-                { time: "7:00 PM", event: "Free Evening / Section Dinners", venue: "Various", color: "border-gray-500" },
+                { time: "9:00 AM", event: "Registration & Gathering", venue: "Hotel Lobby", color: "border-purple-500" },
+                { time: "10:00 AM", event: "Travel to Venue", venue: "TBA", color: "border-pink-500" },
+                { time: "12:00 NN", event: "Lunch by the Sea", venue: "TBA", color: "border-orange-500" },
+                { time: "7:00 PM", event: "Free Evening / Section Dinners", venue: "Various Venues", color: "border-gray-500" },
             ]
         },
         {
             day: "Day 3: July 4, 2026",
-            title: "Farewell & Forward",
+            title: "Optional Tours",
             events: [
-                { time: "9:00 AM", event: "Farewell Breakfast", venue: "Main Hotel", color: "border-teal-500" },
-                { time: "11:00 AM", event: "Closing Remarks & 55th Prep", venue: "Function Hall", color: "border-indigo-500" },
+                { time: "9:00 AM", event: "Assemble for Farm Tours", venue: "Hotel Lobby", color: "border-teal-500" },
+                { time: "12:00 NN", event: "Lunch at Selected Farm", venue: "Various Venues", color: "border-indigo-500" },
+                { time: "5:00 PM", event: "Closing & Planning for Next Reunion", venue: "Hotel", color: "border-indigo-500" },
             ]
         }
     ];
