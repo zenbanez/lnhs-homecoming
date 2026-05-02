@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Activity, Medal, Plus, X, Lock, CheckCircle2 } from 'lucide-react';
+import { Activity, Medal, Plus, X, Lock, CheckCircle2, Image as ImageIcon, Map } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import funRunBanner from '../assets/fun-run-banner.png';
@@ -29,6 +29,8 @@ export default function FunRun() {
     });
     const [submitting, setSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [showRouteMap, setShowRouteMap] = useState(false);
+    const [showPoster, setShowPoster] = useState(false);
 
     useEffect(() => {
         if (userData) {
@@ -111,6 +113,35 @@ export default function FunRun() {
             <div className="w-full rounded-2xl overflow-hidden border border-white/10">
                 <img src={funRunBanner} alt="Fun Run Banner" className="w-full h-auto object-cover max-h-96" />
             </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full">
+                <button 
+                    onClick={() => setShowPoster(!showPoster)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#121212] hover:bg-[#1a1a1a] border border-white/10 text-anniversary-gold py-4 rounded-xl font-semibold transition-colors"
+                >
+                    <ImageIcon size={20} />
+                    {showPoster ? 'Hide Event Poster' : 'View Event Poster'}
+                </button>
+                <button 
+                    onClick={() => setShowRouteMap(!showRouteMap)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#121212] hover:bg-[#1a1a1a] border border-white/10 text-anniversary-gold py-4 rounded-xl font-semibold transition-colors"
+                >
+                    <Map size={20} />
+                    {showRouteMap ? 'Hide Route Map' : 'View Route Map'}
+                </button>
+            </div>
+
+            {showPoster && (
+                <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-[#121212] animate-in fade-in slide-in-from-top-4 duration-300">
+                    <img src="/assets/funrun_poster.jpg" alt="Fun Run Poster" className="w-full h-auto object-contain" />
+                </div>
+            )}
+
+            {showRouteMap && (
+                <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-[#121212] animate-in fade-in slide-in-from-top-4 duration-300">
+                    <img src="/assets/routemap.jpg" alt="Fun Run Route Map" className="w-full h-auto object-contain" />
+                </div>
+            )}
 
             <div className="bg-gradient-to-r from-anniversary-gold/20 to-black border border-anniversary-gold/30 p-8 rounded-2xl flex flex-col md:flex-row gap-8">
                 <div className="flex-1 space-y-4">

@@ -4,7 +4,7 @@ export default function Program() {
     const itinerary = [
         {
             day: "Day 1: July 2, 2026",
-            title: "Morning & Afternoon",
+            title: "Homecoming & Gala Night",
             events: [
                 { time: "8:30 AM", event: "Thanksgiving Mass", venue: "St. Roch the Healer Parish, Manlurip", color: "border-blue-500" },
                 { time: "09:45 AM", event: "Optional Brunch", venue: "Madison Hotel (Buffet P300/pax or a la carte w/ SC discount)", color: "border-green-500" },
@@ -26,7 +26,7 @@ export default function Program() {
             day: "Day 3: July 4, 2026",
             title: "Optional Farm Tours",
             events: [
-                { time: "9:00 AM", event: "Meet up at Madison Hotel Lobby", venue: "Manlurip, San Jose", color: "border-teal-500" },
+                { time: "9:00 AM", event: "Meet up at Robinson's Marasbaras", venue: "Marasbaras", color: "border-teal-500" },
                 { time: "10:00 AM", event: "Travel to Farm Venue", venue: "Cost to be Announced", color: "border-blue-400" },
             ]
         }
@@ -74,20 +74,20 @@ export default function Program() {
                         <span className="bg-anniversary-gold w-2 h-6 rounded-full inline-block"></span>
                         Official Event Poster
                     </h2>
-                    <a 
-                        href="/assets/poster.png" 
-                        download="LNHS_Class76_Homecoming_Poster.png"
+                    <a
+                        href="/assets/poster.jpg"
+                        download="LNHS_Class76_Homecoming_Poster.jpg"
                         className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors font-medium text-sm"
                     >
                         <Download size={18} />
                         Download Poster
                     </a>
                 </div>
-                
+
                 <div className="rounded-3xl overflow-hidden border-2 border-anniversary-gold/50 shadow-[0_0_30px_rgba(212,175,55,0.2)] bg-black">
-                    <img 
-                        src="/assets/poster.png" 
-                        alt="Homecoming Reunion Poster" 
+                    <img
+                        src="/assets/poster.jpg"
+                        alt="Homecoming Reunion Poster"
                         className="w-full h-auto object-contain bg-white"
                     />
                 </div>
