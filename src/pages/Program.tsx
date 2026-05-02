@@ -1,34 +1,33 @@
-import { CalendarDays, MapPin, Clock } from 'lucide-react';
+import { CalendarDays, MapPin, Clock, Download } from 'lucide-react';
 
 export default function Program() {
     const itinerary = [
         {
             day: "Day 1: July 2, 2026",
-            title: "Homecoming & Gala",
+            title: "Morning & Afternoon",
             events: [
-                { time: "8:00 AM", event: "Thanksgiving Mass", venue: "LNHS Main Chapel", color: "border-blue-500" },
-                { time: "9:00 AM", event: "Registration & Fellowship Brunch", venue: "Madison Hotel", color: "border-green-500" },
-                { time: "11:00 AM", event: "Trip Down Memory Lane", venue: "LNHS Gymnasium", color: "border-yellow-500" },
-                { time: "5:00 PM", event: "Homecoming Night Gala", venue: "1.5 Degrees Celsius", color: "border-anniversary-gold" },
+                { time: "8:30 AM", event: "Thanksgiving Mass", venue: "St. Roch the Healer Parish, Manlurip", color: "border-blue-500" },
+                { time: "09:45 AM", event: "Optional Brunch", venue: "Madison Hotel (Buffet P300/pax or a la carte w/ SC discount)", color: "border-green-500" },
+                { time: "11:30 AM", event: "Motorcade to LNHS", venue: "From Madison Hotel", color: "border-yellow-500" },
+                { time: "1:00 PM", event: "'Walk Down Memory Lane'", venue: "Tour of LNHS", color: "border-orange-500" },
+                { time: "2:00 PM", event: "Free Time", venue: "Various Locations", color: "border-gray-500" },
+                { time: "5:00 PM", event: "Gala Night", venue: "1.5 Degrees Celcius, Magsaysay Blvd.", color: "border-red-500" },
             ]
         },
         {
             day: "Day 2: July 3, 2026",
-            title: "Outdoor Fun",
+            title: "Outdoor Swimming Party",
             events: [
-                { time: "9:00 AM", event: "Registration & Gathering", venue: "Hotel Lobby", color: "border-purple-500" },
-                { time: "10:00 AM", event: "Travel to Venue", venue: "TBA", color: "border-pink-500" },
-                { time: "12:00 NN", event: "Lunch by the Sea", venue: "TBA", color: "border-orange-500" },
-                { time: "7:00 PM", event: "Free Evening / Section Dinners", venue: "Various Venues", color: "border-gray-500" },
+                { time: "9:00 AM", event: "Meet up at Port Royale", venue: "Manlurip, San Jose", color: "border-teal-500" },
+                { time: "10:00 AM", event: "Outdoor Swimming Party", venue: "Entrance Fee: 240/pax. Bring food to share - per section", color: "border-blue-400" },
             ]
         },
         {
             day: "Day 3: July 4, 2026",
-            title: "Optional Tours",
+            title: "Optional Farm Tours",
             events: [
-                { time: "9:00 AM", event: "Assemble for Farm Tours", venue: "Hotel Lobby", color: "border-teal-500" },
-                { time: "12:00 NN", event: "Lunch at Selected Farm", venue: "Various Venues", color: "border-indigo-500" },
-                { time: "5:00 PM", event: "Closing & Planning for Next Reunion", venue: "Hotel", color: "border-indigo-500" },
+                { time: "9:00 AM", event: "Meet up at Madison Hotel Lobby", venue: "Manlurip, San Jose", color: "border-teal-500" },
+                { time: "10:00 AM", event: "Travel to Farm Venue", venue: "Cost to be Announced", color: "border-blue-400" },
             ]
         }
     ];
@@ -39,7 +38,7 @@ export default function Program() {
                 <h1 className="text-3xl font-bold text-anniversary-gold flex items-center gap-3">
                     <CalendarDays size={32} /> Program Itinerary
                 </h1>
-                <button className="px-4 py-2 bg-anniversary-gold text-black rounded-lg font-semibold hover:bg-yellow-500 transition-colors">
+                <button onClick={() => window.print()} className="px-4 py-2 bg-anniversary-gold text-black rounded-lg font-semibold hover:bg-yellow-500 transition-colors">
                     Print Schedule
                 </button>
             </div>
@@ -68,6 +67,31 @@ export default function Program() {
                     </div>
                 ))}
             </div>
+
+            <section className="max-w-4xl mx-auto px-4 mt-16 text-center space-y-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                        <span className="bg-anniversary-gold w-2 h-6 rounded-full inline-block"></span>
+                        Official Event Poster
+                    </h2>
+                    <a 
+                        href="/assets/poster.png" 
+                        download="LNHS_Class76_Homecoming_Poster.png"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg transition-colors font-medium text-sm"
+                    >
+                        <Download size={18} />
+                        Download Poster
+                    </a>
+                </div>
+                
+                <div className="rounded-3xl overflow-hidden border-2 border-anniversary-gold/50 shadow-[0_0_30px_rgba(212,175,55,0.2)] bg-black">
+                    <img 
+                        src="/assets/poster.png" 
+                        alt="Homecoming Reunion Poster" 
+                        className="w-full h-auto object-contain bg-white"
+                    />
+                </div>
+            </section>
         </div>
     );
 }

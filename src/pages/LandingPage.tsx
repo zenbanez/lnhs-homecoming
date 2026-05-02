@@ -19,7 +19,7 @@ export default function LandingPage() {
                     </p>
                     <div className="pt-4">
                         <span className="px-6 py-2 bg-anniversary-gold text-black font-black rounded-full uppercase tracking-widest text-sm">
-                            July 2-4, 2026
+                            July 2-3, 2026
                         </span>
                     </div>
                 </div>

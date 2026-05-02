@@ -64,7 +64,7 @@ export default function Gala() {
                 <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-anniversary-gold to-yellow-200 bg-clip-text text-transparent">
                     Homecoming Night Gala
                 </h1>
-                <p className="text-xl text-gray-300">July 2, 2026 • 5:00 PM - 11:00 PM</p>
+                <p className="text-xl text-gray-300">July 2, 2026 • 5:00 PM - 11:00 PM @ 1.5 Degrees Celsius, Magsaysay Blvd.</p>
 
                 <div className="flex justify-center gap-8 mt-8">
                     <div className="text-center">
@@ -136,6 +136,11 @@ export default function Gala() {
                 {/* Registration Form */}
                 <div className="bg-white/5 border border-anniversary-gold/20 p-6 md:p-8 rounded-2xl">
                     <h2 className="text-2xl font-bold mb-6">Register for the Gala</h2>
+                    
+                    <div className="mb-6 p-4 bg-anniversary-gold/10 border border-anniversary-gold/30 rounded-lg text-gray-200 text-sm">
+                        <strong className="text-anniversary-gold text-base">Contribution: ₱1,000</strong><br />
+                        Covers gala night dinner and includes (1) fun run t-shirt/singlet for class member.
+                    </div>
 
                     {successMessage ? (
                         <div className="p-4 bg-green-900/40 border border-green-500/50 text-green-200 rounded-lg text-center">

@@ -34,7 +34,7 @@ service cloud.firestore {
 
     // Classmates directory
     match /classmates/{classmateId} {
-      allow read: if isAuthenticated();
+      allow read: if true;
       allow create: if isAuthenticated(); // Allow users to create their own record or committee to add others
       allow update: if isOwner(classmateId) || isCommittee();
       allow delete: if isAdmin();
@@ -49,13 +49,13 @@ service cloud.firestore {
 
     // Registrations (Gala & Fun Run)
     match /gala_registrations/{regId} {
-      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isCommittee());
+      allow read: if true;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isCommittee();
     }
     
     match /funrun_registrations/{regId} {
-      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isCommittee());
+      allow read: if true;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isCommittee();
     }

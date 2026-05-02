@@ -105,7 +105,7 @@ export default function FunRun() {
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold text-anniversary-gold flex items-center gap-3">
-                <Activity size={32} /> May Fun Run Registration
+                <Activity size={32} /> Pre-Reunion 5KM Fun Run (May 30, 2026)
             </h1>
             
             <div className="w-full rounded-2xl overflow-hidden border border-white/10">
@@ -118,9 +118,23 @@ export default function FunRun() {
                         <Medal className="text-anniversary-gold" /> Run for a Cause
                     </h2>
                     <p className="text-gray-300">
-                        Join the LNHS Class of '76 Fundraising 5km Run this coming May! Proceeds go to our section contributions and the school's scholarship fund.
+                        Sponsored fundraising promoting <strong>"Healthy seniors in their golden years."</strong><br /><br />
+                        LNHS Class of '76 Members must help to recruit participants by selling t-shirts as 'tickets' and qualify them to win. A Learning Session on 'promoting health of seniors' will follow the run.
                     </p>
-                    <div className="text-xl font-bold text-anniversary-gold">Registration Fee: ₱450</div>
+                    
+                    <div className="space-y-2 mt-4">
+                        <div className="text-xl font-bold text-anniversary-gold">Runner Participation Fee: ₱450</div>
+                        <div className="text-sm text-gray-400">Includes T-shirt/singlet, Bottled Water, 1 bar chocolate.</div>
+                    </div>
+
+                    <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
+                        <h3 className="text-anniversary-gold font-bold mb-2">Prizes</h3>
+                        <ul className="text-gray-300 text-sm space-y-1">
+                            <li><strong>1st:</strong> ₱5,000</li>
+                            <li><strong>2nd:</strong> ₱3,000</li>
+                            <li><strong>3rd:</strong> ₱1,500</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div className="w-full md:w-96 min-w-0 bg-black border border-white/10 p-6 rounded-xl relative">

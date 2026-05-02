@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, deleteDoc, limit, where } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { useAuth } from '../context/AuthContext';
@@ -25,10 +25,21 @@ export default function MemoryAlbum() {
     const [caption, setCaption] = useState('');
     const [category, setCategory] = useState('Memories');
     const [filterCategory, setFilterCategory] = useState<string | null>(null);
+    const [limitCount, setLimitCount] = useState(12);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        const q = query(collection(db, 'photos'), orderBy('createdAt', 'desc'));
+        setLimitCount(12);
+    }, [filterCategory]);
+
+    useEffect(() => {
+        let q;
+        if (filterCategory) {
+            q = query(collection(db, 'photos'), where('category', '==', filterCategory), orderBy('createdAt', 'desc'), limit(limitCount));
+        } else {
+            q = query(collection(db, 'photos'), orderBy('createdAt', 'desc'), limit(limitCount));
+        }
+
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const photoData: Photo[] = [];
             snapshot.forEach((doc) => {
@@ -42,7 +53,7 @@ export default function MemoryAlbum() {
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [filterCategory, limitCount]);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -264,10 +275,9 @@ export default function MemoryAlbum() {
                     <p className="text-gray-600">Be the first to share a memory!</p>
                 </div>
             ) : (
-                <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-                    {photos
-                        .filter(photo => !filterCategory || photo.category === filterCategory)
-                        .map((photo) => (
+                <div className="space-y-12">
+                    <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                        {photos.map((photo) => (
                             <Card
                                 key={photo.id}
                                 onClick={() => setSelectedPhoto(photo)}
@@ -293,6 +303,17 @@ export default function MemoryAlbum() {
                                 </div>
                             </Card>
                         ))}
+                    </div>
+                    {photos.length >= limitCount && (
+                        <div className="flex justify-center pt-8">
+                            <Button 
+                                onClick={() => setLimitCount(prev => prev + 12)}
+                                variant="outline"
+                            >
+                                Load More Photos
+                            </Button>
+                        </div>
+                    )}
                 </div>
             )}
 

@@ -12,6 +12,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [isRegistering, setIsRegistering] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
     const navigate = useNavigate();
 
     const handleGoogleLogin = async () => {
@@ -19,15 +20,16 @@ export default function LoginPage() {
         try {
             await signInWithPopup(auth, provider);
             navigate('/dashboard');
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert('Login failed');
+            setErrorMsg('Google login failed: ' + error.message);
         }
     };
 
     const handleEmailAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setErrorMsg('');
         try {
             if (isRegistering) {
                 await createUserWithEmailAndPassword(auth, email, password);
@@ -37,7 +39,7 @@ export default function LoginPage() {
             navigate('/dashboard');
         } catch (error: any) {
             console.error(error);
-            alert(error.message);
+            setErrorMsg(error.message);
         } finally {
             setLoading(false);
         }
@@ -62,8 +64,9 @@ export default function LoginPage() {
                     onClick={handleGoogleLogin}
                     variant="secondary"
                     className="w-full flex items-center justify-center gap-3 py-3"
+                    aria-label="Continue with Google"
                     leftIcon={
-                        <svg className="h-5 w-5" viewBox="0 0 24 24">
+                        <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                             <path
                                 fill="#4285F4"
                                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -94,6 +97,12 @@ export default function LoginPage() {
                         <span className="px-2 bg-[#121212] text-gray-500 italic">or use email</span>
                     </div>
                 </div>
+
+                {errorMsg && (
+                    <div className="mt-4 p-3 bg-red-900/40 border border-red-500/50 text-red-200 rounded-lg text-sm text-center">
+                        {errorMsg}
+                    </div>
+                )}
 
                 <form className="mt-8 space-y-4" onSubmit={handleEmailAuth}>
                     <Input

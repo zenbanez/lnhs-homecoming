@@ -51,6 +51,8 @@ function App() {
             <Route path="funrun" element={<FunRun />} />
             <Route path="album" element={<MemoryAlbum />} />
             <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<LoginPage />} />
+            <Route path="register" element={<LoginPage />} />
             <Route path="onboarding" element={
               <ProtectedRoute requireOnboarding={false}>
                 <OnboardingPage />
@@ -80,8 +82,8 @@ function App() {
               <Route path="venue" element={<Venue />} />
               <Route path="tshirts" element={<TShirts />} />
               <Route path="inventory" element={<Inventory />} />
-              <Route path="*" element={<div className="text-center py-20 text-2xl text-gray-500">Not Found</div>} />
             </Route>
+            <Route path="*" element={<div className="text-center py-20 text-2xl text-gray-500">Not Found</div>} />
           </Route>
         </Routes>
       </BrowserRouter>
