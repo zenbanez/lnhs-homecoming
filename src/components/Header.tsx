@@ -21,7 +21,7 @@ export default function Header({ onToggleSidebar, isSidebarOpen }: HeaderProps) 
         { name: 'Home', path: '/' },
         { name: 'Program', path: '/program' },
         { name: 'Gala Night', path: '/gala' },
-        { name: 'May Fun Run', path: '/funrun' },
+        { name: 'June Fun Run', path: '/funrun' },
         { name: 'Memory Album', path: '/album' },
         { name: 'In Memoriam', path: '/memoriam' },
     ];

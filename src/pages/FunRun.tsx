@@ -70,7 +70,7 @@ export default function FunRun() {
                 paymentStatus: 'Pending',
                 timestamp: Timestamp.now()
             });
-            setSuccessMessage('Successfully registered for the May Fun Run!');
+            setSuccessMessage('Successfully registered for the June Fun Run!');
             setFormData({ 
                 name: userData?.displayName || '', 
                 email: userData?.email || '', 
@@ -107,7 +107,7 @@ export default function FunRun() {
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold text-anniversary-gold flex items-center gap-3">
-                <Activity size={32} /> Pre-Reunion 5KM Fun Run (May 30, 2026)
+                <Activity size={32} /> Pre-Reunion 5KM Fun Run (June 6, 2026)
             </h1>
             
             <div className="w-full rounded-2xl overflow-hidden border border-white/10">
@@ -133,13 +133,13 @@ export default function FunRun() {
 
             {showPoster && (
                 <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-[#121212] animate-in fade-in slide-in-from-top-4 duration-300">
-                    <img src="/assets/funrun_poster.jpg" alt="Fun Run Poster" className="w-full h-auto object-contain" />
+                    <img src="/assets/funrun_poster_v2.jpg" alt="Fun Run Poster" className="w-full h-auto object-contain" />
                 </div>
             )}
 
             {showRouteMap && (
                 <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-[#121212] animate-in fade-in slide-in-from-top-4 duration-300">
-                    <img src="/assets/routemap.jpg" alt="Fun Run Route Map" className="w-full h-auto object-contain" />
+                    <img src="/assets/routemap_v2.jpg" alt="Fun Run Route Map" className="w-full h-auto object-contain" />
                 </div>
             )}
 
