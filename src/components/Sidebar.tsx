@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Users, ClipboardList, Banknote, UtensilsCrossed, Shirt, Package, Shield, LayoutDashboard } from 'lucide-react';
+import { Users, ClipboardList, Banknote, UtensilsCrossed, Shirt, Package, Shield, LayoutDashboard, Activity } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuth } from '../context/AuthContext';
 
 const navItems = [
     { name: 'Alumni Tracker', path: '/dashboard/alumni', icon: Users, exact: false },
+    { name: 'Fun Run Signups', path: '/dashboard/funrun', icon: Activity, exact: false },
     { name: 'Secretariat View', path: '/dashboard/secretariat', icon: ClipboardList, exact: false },
     { name: 'Finance (Ways & Means)', path: '/dashboard/finance', icon: Banknote, exact: false },
     { name: 'Venue & Food', path: '/dashboard/venue', icon: UtensilsCrossed, exact: false },

@@ -19,6 +19,7 @@ import DashboardHome from './pages/DashboardHome';
 
 import MemoryAlbum from './pages/MemoryAlbum';
 import AdminPanel from './pages/AdminPanel';
+import FunRunRegistrations from './pages/FunRunRegistrations';
 
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode, requireOnboarding?: boolean }) {
   const { user, loading, userData } = useAuth();
@@ -82,6 +83,7 @@ function App() {
               <Route path="venue" element={<Venue />} />
               <Route path="tshirts" element={<TShirts />} />
               <Route path="inventory" element={<Inventory />} />
+              <Route path="funrun" element={<FunRunRegistrations />} />
             </Route>
             <Route path="*" element={<div className="text-center py-20 text-2xl text-gray-500">Not Found</div>} />
           </Route>

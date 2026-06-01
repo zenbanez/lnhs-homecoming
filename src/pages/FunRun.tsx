@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Activity, Medal, Plus, X, Lock, CheckCircle2, Image as ImageIcon, Map } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Activity, Medal, Plus, X, CheckCircle2, Image as ImageIcon, Map, QrCode, Banknote } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import funRunBanner from '../assets/fun-run-banner.png';
 
@@ -19,6 +18,8 @@ export default function FunRun() {
         email: string;
         category: string;
         shirts: ShirtOrder[];
+        paymentMethod: 'GCash' | 'Cash';
+        refNumber: string;
     }
 
     const [formData, setFormData] = useState<FormData>({
@@ -26,6 +27,8 @@ export default function FunRun() {
         email: '',
         category: '5K',
         shirts: [{ size: 'L', quantity: 1 }],
+        paymentMethod: 'GCash',
+        refNumber: '',
     });
     const [submitting, setSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
@@ -58,24 +61,29 @@ export default function FunRun() {
         setFormData(prev => ({ ...prev, shirts: newShirts }));
     };
 
+    const totalShirts = formData.shirts.reduce((acc, curr) => acc + curr.quantity, 0);
+    const totalFee = 450 + Math.max(0, totalShirts - 1) * 350; // 450 base registration (includes 1 shirt) + 350 per extra shirt
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user) return;
         setSubmitting(true);
         setSuccessMessage('');
         try {
             await addDoc(collection(db, 'funrun_registrations'), {
                 ...formData,
-                userId: user.uid,
+                userId: user ? user.uid : 'public',
                 paymentStatus: 'Pending',
-                timestamp: Timestamp.now()
+                timestamp: Timestamp.now(),
+                amountPaid: totalFee
             });
             setSuccessMessage('Successfully registered for the June Fun Run!');
             setFormData({ 
                 name: userData?.displayName || '', 
                 email: userData?.email || '', 
                 category: '5K', 
-                shirts: [{ size: 'L', quantity: 1 }] 
+                shirts: [{ size: 'L', quantity: 1 }],
+                paymentMethod: 'GCash',
+                refNumber: '',
             });
         } catch (error) {
             console.error("Error adding document: ", error);
@@ -84,25 +92,6 @@ export default function FunRun() {
             setSubmitting(false);
         }
     };
-
-    if (!user) {
-        return (
-            <div className="flex flex-col items-center justify-center p-12 bg-black border border-white/10 rounded-2xl max-w-2xl mx-auto shadow-2xl mt-12">
-                <Lock size={64} className="text-anniversary-gold mb-6 opacity-80" />
-                <h2 className="text-3xl font-bold text-white mb-4 text-center">Authentication Required</h2>
-                <p className="text-gray-400 mb-8 max-w-md text-center text-lg">
-                    You must be logged in to register for the Fun Run. Please log in or create an account to secure your spot.
-                </p>
-                <Link to="/login" className="bg-anniversary-gold text-black px-8 py-3 rounded-lg font-bold hover:bg-yellow-500 transition-colors">
-                    Go to Login
-                </Link>
-            </div>
-        );
-    }
-
-    const totalFee = 450; // Registration fee per runner
-    // If they order extra shirts we might charge them, but the prompt only asked to "change the registration fee to 450. they can also order multiple shirts".
-    // I will specify the base registration fee is 450, and their shirts are part of their package or additional.
 
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
@@ -202,7 +191,7 @@ export default function FunRun() {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 border-b border-white/10 pb-5">
                             <div className="flex justify-between items-center">
                                 <h3 className="font-semibold text-white">Shirt Orders</h3>
                                 <button type="button" onClick={handleAddShirt} className="text-sm flex items-center gap-1 text-anniversary-gold hover:text-yellow-400">
@@ -235,6 +224,81 @@ export default function FunRun() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="font-semibold text-white">Payment Method</h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, paymentMethod: 'GCash' })}
+                                    className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all ${
+                                        formData.paymentMethod === 'GCash'
+                                            ? 'border-anniversary-gold bg-anniversary-gold/10 text-white'
+                                            : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
+                                    }`}
+                                >
+                                    <QrCode size={20} className="mb-1 text-anniversary-gold" />
+                                    <span className="text-xs font-bold block">GCash Ahead</span>
+                                    <span className="text-[9px] text-gray-500 mt-0.5">Pre-pay & log Ref</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, paymentMethod: 'Cash', refNumber: '' })}
+                                    className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all ${
+                                        formData.paymentMethod === 'Cash'
+                                            ? 'border-anniversary-gold bg-anniversary-gold/10 text-white'
+                                            : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
+                                    }`}
+                                >
+                                    <Banknote size={20} className="mb-1 text-anniversary-gold" />
+                                    <span className="text-xs font-bold block">Cash on Day</span>
+                                    <span className="text-[9px] text-gray-500 mt-0.5">Pay at the venue</span>
+                                </button>
+                            </div>
+
+                            {formData.paymentMethod === 'GCash' && (
+                                <div className="space-y-3 p-3 bg-white/5 border border-white/10 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <div className="text-xs text-gray-300 space-y-1">
+                                        <div className="text-anniversary-gold font-bold mb-1">GCash Account Details:</div>
+                                        <div>Name: <strong className="text-white">Maria Santos (Treasurer)</strong></div>
+                                        <div>Number: <strong className="text-white font-mono">0917-123-4567</strong></div>
+                                        <div>Amount to send: <strong className="text-anniversary-gold">₱{totalFee}</strong></div>
+                                    </div>
+                                    
+                                    {/* Mock QR Code Box */}
+                                    <div className="flex items-center gap-3 bg-black/60 p-2.5 rounded-lg border border-white/5">
+                                        <div className="w-14 h-14 bg-white/10 rounded border border-white/20 flex flex-col items-center justify-center text-center shrink-0">
+                                            <QrCode size={24} className="text-anniversary-gold opacity-80" />
+                                            <span className="text-[7px] text-gray-400 font-bold uppercase mt-1">GCash QR</span>
+                                        </div>
+                                        <div className="text-[9px] text-gray-400 leading-normal">
+                                            Scan QR to transfer instantly. Please enter the 13-digit reference number below.
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs text-gray-400 mb-1">GCash 13-Digit Ref Number</label>
+                                        <input
+                                            required
+                                            type="text"
+                                            pattern="[0-9]{13}"
+                                            maxLength={13}
+                                            value={formData.refNumber}
+                                            onChange={e => setFormData({ ...formData, refNumber: e.target.value.replace(/[^0-9]/g, '') })}
+                                            placeholder="e.g. 2026123456789"
+                                            className="w-full bg-[#121212] border border-gray-700 rounded-lg p-2 text-xs text-white font-mono outline-none focus:border-anniversary-gold"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {formData.paymentMethod === 'Cash' && (
+                                <div className="p-3 bg-white/5 border border-white/10 rounded-xl text-[11px] text-gray-400 leading-normal animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <span className="text-anniversary-gold font-bold block mb-1">On-Day Cash Payment Instructions:</span>
+                                    Please prepare exactly <strong className="text-white">₱{totalFee}</strong> to pay at the Fun Run Secretariat Booth on June 6, 2026 before the event starts.
+                                </div>
+                            )}
                         </div>
 
                         <button disabled={submitting} type="submit" className="w-full bg-anniversary-gold text-black font-bold py-3.5 rounded-lg hover:bg-yellow-500 transition-colors mt-6 disabled:opacity-50">
